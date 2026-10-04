@@ -93,11 +93,10 @@ async def handle_channel_posts(update: Update, context: ContextTypes.DEFAULT_TYP
 def main():
 # Security Application Builder 
 
-    application = Application.builder().token(TOKEN).build() 
-    application.add_handler(CommandHandler("start", start))
-    application.add_handler(CommandHandler("register", register_channel))
-    application.add_handler(CommandHandler("broadcast", broadcast_message))
-    application.add_handler(MessageHandler(filters.ChatType.CHANNEL & (filters.TEXT | filters.PHOTO | filters.VIDEO), handle_channel_posts)) print("🚀 'መሃይሟ ምሁር' የደህንነት ቦት በሰላም ተነሳ... 24/7 እየሰራ ነው።")
+ application.add_handler(CommandHandler("start", start))
+application.add_handler(CommandHandler("register", register))
+application.add_handler(CommandHandler("broadcast", broadcast))
+application.add_handler(MessageHandler(filters.ChatType.CHANNEL & (filters.TEXT | filters.PHOTO | filters.VIDEO), handle_channel_posts)) 
     application.run_polling()
 
 if name == "main":
