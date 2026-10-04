@@ -92,7 +92,8 @@ async def handle_channel_posts(update: Update, context: ContextTypes.DEFAULT_TYP
 
 def main():
 # Security Application Builder 
-application = Application.builder().token(TOKEN).build() 
+
+    application = Application.builder().token(TOKEN).build() 
     application.add_handler(CommandHandler("start", start))
     application.add_handler(CommandHandler("register", register_channel))
     application.add_handler(CommandHandler("broadcast", broadcast_message))
