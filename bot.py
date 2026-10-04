@@ -4,24 +4,24 @@ import html
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import Application, CommandHandler, MessageHandler, filters, ContextTypes
 
-# 🛡️ የደህንነት ሎግንግ ማዋቀር (Security Logging Setup)
+# 🛡️ Security Logging Setup
 logging.basicConfig(
     format="%(asctime)s - %(name)s - %(levelname)s - %(message)s", level=logging.INFO
 )
 logger = logging.getLogger(name)
 
-# 🔑 የቦት ቶከን (የእርስዎ የተስተካከለ ሚስጥራዊ ቁልፍ)
+# 🔑 Bot Token
 TOKEN = "8985815201:AAFU84DvUnLvHUbgTSQTlzsQsHW55GQU1V4"
 
-# የተጠቃሚዎች እና የነጋዴ ቻናሎች መዝገብ (Database Simulation)
+# Database Simulation
 REGISTERED_CHANNELS = set()
-SUBSCRIBERS = set()  # አፑን ወይም ቦቱን የሚጠቀሙ ተጠቃሚዎች ዝርዝር ለግሎባል ማስታወቂያ
+SUBSCRIBERS = set()
 
-# 🚫 ጸያፍ እና ህገወጥ ቃላት ማጣሪያ (Content Moderation Firewall - Anti-Hacking & Discipline)
+# 🚫 Content Moderation Firewall
 BANNED_KEYWORDS = ["ህገወጥ", "ጦር መሳሪያ", "ሐሰተኛ", "sex", "hack", "malware"]
 
 def is_content_safe(text: str) -> bool:
-    """ማንኛውም ፖስት ሲገባ ህገወጥ ወይም ጸያፍ ቃላት እንዳሉት የሚያጣራ የደህንነት ግድግዳ"""
+    """Firewall to check for banned keywords in channel posts"""
     if not text:
         return True
     text_lower = text.lower()
@@ -31,7 +31,7 @@ def is_content_safe(text: str) -> bool:
     return True
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    """ቦቱ ሲጀመር የሚሰጠው ሰላምታ እና መመሪያ"""
+    """Start command handler"""
     user = update.effective_user
     SUBSCRIBERS.add(user.id)
     
@@ -43,7 +43,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_html(welcome_text)
 
 async def register_channel(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    """ነጋዴዎች ቻናላቸውን ከሲስተሙ ጋር የሚያያይዙበት ደህንነቱ የተጠበቀ ትዕዛዝ"""
+    """Register channel command handler"""
     try:
         chat_id = update.effective_chat.id
         REGISTERED_CHANNELS.add(chat_id)
@@ -55,8 +55,8 @@ async def register_channel(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await update.message.reply_text("⚠️ ስህተት አጋጥሟል! እባክዎ እንደገና ይሞክሩ።")
 
 async def broadcast_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    """🌟 የአድሚን/የፈጣሪ ልዩ ማዕከል (Founder's Hub): አዲስ ነገር ሲለቀቅ ለሁሉም ማስታወቂያ ማዳረስ"""
-    ADMIN_ID = 123456789  # የእርስዎን ትክክለኛ የቴሌግራም አድሚን ID እዚህ ያስገቡ
+    """Broadcast message to all subscribers (Admin only)"""
+    ADMIN_ID = 123456789  # Replace with your actual Telegram Admin ID
     
     if update.effective_user.id != ADMIN_ID:
         await update.message.reply_text("⛔ ይቅርታ! ይህንን ትዕዛዝ መጠቀም የሚችሉት ዋናው አድሚን ብቻ ናቸው።")
@@ -78,7 +78,7 @@ async def broadcast_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text(f"✅ ማስታወቂያው ለ {success_count} ተጠቃሚዎች ተዳርሷል!")
 
 async def handle_channel_posts(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    """ነጋዴዎች በቻናላቸው የሚለቁትን ፖስት (ጽሁፍ፣ ፎቶ፣ ቪዲዮ) የሚቀበል እና የሚመረምር ሞተር"""
+    """Handle incoming channel posts with moderation"""
     post = update.channel_post
     if not post:
         return
@@ -91,12 +91,15 @@ async def handle_channel_posts(update: Update, context: ContextTypes.DEFAULT_TYP
     logger.info(f"Verified post processed from channel: {post.chat.title}")
 
 def main():
-# Security Application Builder 
+    """Main application runner"""
+    application = Application.builder().token(TOKEN).build()
 
- application.add_handler(CommandHandler("start", start))
-application.add_handler(CommandHandler("register", register))
-application.add_handler(CommandHandler("broadcast", broadcast))
-application.add_handler(MessageHandler(filters.ChatType.CHANNEL & (filters.TEXT | filters.PHOTO | filters.VIDEO), handle_channel_posts)) 
+    application.add_handler(CommandHandler("start", start))
+    application.add_handler(CommandHandler("register", register_channel))
+    application.add_handler(CommandHandler("broadcast", broadcast_message))
+    application.add_handler(MessageHandler(filters.ChatType.CHANNEL & (filters.TEXT | filters.PHOTO | filters.VIDEO), handle_channel_posts))
+    
+    print("Bot is running...")
     application.run_polling()
 
 if name == "main":
