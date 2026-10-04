@@ -91,9 +91,8 @@ async def handle_channel_posts(update: Update, context: ContextTypes.DEFAULT_TYP
     logger.info(f"Verified post processed from channel: {post.chat.title}")
 
 def main():
-    """ቦቱን የሚያስነሳው ዋናው ክፍል (Security Application Builder)"""
-    application = Application.builder().token(TOKEN).build()
-
+# Security Application Builder 
+application = Application.builder().token(TOKEN).build() 
     application.add_handler(CommandHandler("start", start))
     application.add_handler(CommandHandler("register", register_channel))
     application.add_handler(CommandHandler("broadcast", broadcast_message))
