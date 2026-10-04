@@ -8,7 +8,7 @@ from telegram.ext import Application, CommandHandler, MessageHandler, filters, C
 logging.basicConfig(
     format="%(asctime)s - %(name)s - %(levelname)s - %(message)s", level=logging.INFO
 )
-logger = logging.getLogger(name)
+logger = logging.getLogger("bot")
 
 # 🔑 Bot Token
 TOKEN = "8985815201:AAFU84DvUnLvHUbgTSQTlzsQsHW55GQU1V4"
